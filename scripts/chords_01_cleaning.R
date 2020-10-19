@@ -67,7 +67,19 @@ new_desc_columns <-
 chords <- if_else(new_desc_columns$chord == "", new_desc_columns$key, new_desc_columns$chord)
 new_desc_columns <- 
         new_desc_columns %>%  
-        mutate(chord = chords)
+        mutate(chord = chords) %>% 
+        # Create a more wordy key_chord combination
+        mutate(key_chord_long = paste(key, chord)) %>% 
+        # Extract a short-form key_chord combination
+        separate(
+                col = description.overview,
+                sep = " chord",
+                into = c("key_chord_short", "remnants"),
+                extra = "drop") %>% 
+        # Get rid of irrelevant data
+        select(-remnants) %>% 
+        # Reorder columns for convenience
+        select(key_chord_short, key_chord_long, everything())
 
 # Create a separate data set for writing
 cleansed_data <- new_desc_columns
