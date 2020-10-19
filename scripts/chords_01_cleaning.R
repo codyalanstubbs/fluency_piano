@@ -4,10 +4,16 @@ data <- read_csv("data/chords_00_scraped.csv")
 data$description[1] # \n can be used to create separate columns
 
 new_desc_columns <-
-        data %>% 
+        data %>%
+        mutate(description = 
+                       gsub("EXPLANATION: ", "_EXPLANATION: ", description)) %>% 
+        mutate(description = 
+                       gsub("THEORY: ", "_THEORY: ", description)) %>% 
+        mutate(description = 
+                       gsub("FINGERINGS: ", "_FINGERINGS: ", description)) %>% 
         separate(
                 col = "description",
-                sep = "\\.\r\n",
+                sep = "_",
                 into = c("description.overview",
                          "description.explanation",
                          "description.theory",
@@ -33,9 +39,21 @@ new_desc_columns <-
                 col = fingers,
                 sep = ",",
                 into = c("fingers.lh", "fingers.rh")) %>% 
-       filter(notes != "NA")
-        
-        # mutate(fingering.hand = gsub("two-hands", NA, fingering.hand)) %>% 
-        pivot_wider(names_from = fingering.hand, values_from = "fingers")
+        separate_rows(notes, sep = "/") %>% 
+        filter(notes != "NA") %>% 
+        mutate(chord = gsub("chord", "", chord)) %>% 
+        separate(
+                col = chord,
+                into = c("key", "chord"),
+                extra = "merge" ) 
+
+chords <- if_else(new_desc_columns$chord == "", new_desc_columns$key, new_desc_columns$chord)
+
+new_desc_columns <- 
+        new_desc_columns %>%  
+        mutate(chord = chords)
+
+cleansed_data <- new_desc_columns
+
 # final modifications and write to csv ----
-write.csv(all_chord_data, "data/chords_01_cleaned.csv", row.names = FALSE)
+write.csv(cleansed_data, "data/chords_01_cleaned.csv", row.names = FALSE)
