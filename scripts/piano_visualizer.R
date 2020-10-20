@@ -108,7 +108,7 @@ display_notes <- function(chrd = NULL, notes_lst){
                       legend.position = "none")
         
         #----
-        if (chrd = NULL){
+        if (chrd == NULL){
                 visual_data <- k_data %>% 
                         filter(octave == 4) %>% 
                         filter(notes %in% notes_lst)
