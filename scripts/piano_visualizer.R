@@ -144,6 +144,7 @@ display_notes <- function(chrd = NULL, notes_lst){
         }
 }
 
+# Test out the function
 notes_lst <- c("A", "C#", "E")
 chrd <- "B major"
 display_notes(chrd = chrd)
