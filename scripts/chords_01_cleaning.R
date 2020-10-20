@@ -82,7 +82,7 @@ cleansed_data <-
         select(key_chord_short, key_chord_long, everything()) %>% 
         # Separating the notes for each chord and maintaining a column with all notes in it
         mutate(notes_all = notes) %>% 
-        separate_rows(col = notes, sep = " ")
+        separate_rows(notes, sep = " ")
 
 # final modifications and write to csv ----
 write.csv(cleansed_data, "data/chords_01_cleaned.csv", row.names = FALSE)
