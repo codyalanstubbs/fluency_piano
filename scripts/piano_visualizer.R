@@ -1,24 +1,27 @@
 library(tidyverse)
 
-display_notes <- function(chrd = NULL, notes_lst){
+display_notes <- function(chrd = NULL, notes_lst, octave_section = 5){
         
         
-                # Load data for piano ----
+                # Load data for piano figure ----
                 k_data <- 
-                        read_csv("data/key-data-88 - keys.csv") %>% 
+                        read_csv("data/key-data-88 - keys.csv")  %>% 
+                        # Select a specific octave to focus
+                        filter(octave %in% octave_section) %>%  
+                        # Create different y-values to use for black and white keys
                         mutate(viz.y = key.color) %>% 
                         mutate(viz.y = gsub("white", "1", key.color)) %>%
                         mutate(viz.y = gsub("black", "0.667", viz.y)) %>% 
                         mutate(viz.y = as.numeric(viz.y))  %>% 
-                        separate_rows(notes, sep = " ") %>% 
-                        filter(octave == 5) %>% 
-                        filter(key.number >= 28, key.number <= 63) 
+                        # Separate the notes into rows to make it easier to filter 
+                        # through in if-else section 
+                        separate_rows(notes, sep = " ")
                 
                 b <- k_data %>% filter(key.color == "white") %>% select(key.number)
                 b <- unique(b$key.number)
                 
+                # Create the baseline figure prior to if-else
                 p <- k_data %>% 
-                        filter(octave == 4) %>% 
                         ggplot(aes(x = viz.x, y = viz.y, fill = key.color)) +
                         geom_col(
                                 data = k_data %>% filter(key.color == "white"),
@@ -35,24 +38,19 @@ display_notes <- function(chrd = NULL, notes_lst){
                                 limits = c(1,0), 
                                 expand = c(0,0)
                         ) +
-                        scale_x_continuous(
-                                breaks = k_data$key.number,
-                                labels = k_data$key.number,
-                                position = "top"
-                        ) +
                         theme_classic() +
-                        theme(axis.text.y = element_blank(),
+                        theme(axis.text.x = element_text(color = "black"),
+                                axis.text.y = element_blank(),
                               axis.ticks.y = element_blank(),
                               axis.title.y = element_blank(),
                               axis.line.y = element_blank(),
-                              #axis.line.x = element_blank(),
                               axis.title.x = element_blank(),
                               legend.position = "none")
 
         #----
         if (is.null(chrd)){
                 visual_data <- k_data %>% 
-                        filter(octave == 5) %>% 
+                        filter(octave %in% octave_section) %>% 
                         filter(notes %in% notes_lst)
                 
                 p_w_chord <- # The piano build ####
@@ -97,7 +95,7 @@ display_notes <- function(chrd = NULL, notes_lst){
                         select(key_chord_short, notes) 
                 
                 visual_data <- k_data %>% 
-                        filter(octave == 5) %>% 
+                        filter(octave %in% octave_section) %>% 
                         filter(notes %in% chord_data$notes)
                 
                 # The piano build ###
@@ -147,5 +145,5 @@ display_notes <- function(chrd = NULL, notes_lst){
 # Test out the function
 notes_lst <- c("A", "C#", "E")
 chrd <- "B major"
-display_notes(chrd = chrd)
+display_notes(chrd = chrd, octave_section = 1:3)
 display_notes(notes_lst = notes_lst)
