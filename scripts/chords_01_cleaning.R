@@ -65,7 +65,7 @@ new_desc_columns <-
 
 # For keys with not chord description, then just make the chord value the same as the key
 chords <- if_else(new_desc_columns$chord == "", new_desc_columns$key, new_desc_columns$chord)
-new_desc_columns <- 
+cleansed_data <- 
         new_desc_columns %>%  
         mutate(chord = chords) %>% 
         # Create a more wordy key_chord combination
@@ -79,10 +79,10 @@ new_desc_columns <-
         # Get rid of irrelevant data
         select(-remnants) %>% 
         # Reorder columns for convenience
-        select(key_chord_short, key_chord_long, everything())
-
-# Create a separate data set for writing
-cleansed_data <- new_desc_columns
+        select(key_chord_short, key_chord_long, everything()) %>% 
+        # Separating the notes for each chord and maintaining a column with all notes in it
+        mutate(notes_all = notes) %>% 
+        separate_rows(col = notes, sep = " ")
 
 # final modifications and write to csv ----
 write.csv(cleansed_data, "data/chords_01_cleaned.csv", row.names = FALSE)
