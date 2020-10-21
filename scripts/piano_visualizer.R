@@ -38,6 +38,7 @@ display_notes <- function(chrd = NULL, notes_lst, octave_section = 5){
                                 limits = c(1,0), 
                                 expand = c(0,0)
                         ) +
+                        scale_x_continuous(position = "top") +
                         theme_classic() +
                         theme(axis.text.x = element_text(color = "black"),
                                 axis.text.y = element_blank(),
