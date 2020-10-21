@@ -9,16 +9,45 @@ figures
 
 names <- unique(major_chords$key_chord_short)
 
-ggsave(
-        filename = paste("images/", names[1], ".png", sep =""), 
-        plot = figures[[1]], 
-        device = "png", 
-        width = 5,
-        height = 5,
-        units = "in"
-        ) 
+print_pngs <- function(figures, names){
+        for (i in 1:length(names)){
+                ggsave(
+                        filename = paste("images/", names[i], ".png", sep =""), 
+                        plot = figures[[i]], 
+                        device = "png", 
+                        width = 5,
+                        height = 5,
+                        units = "in"
+                )       
+        }
+}
 
-colnames(figures)
+print_pngs(figures, names)      
+
+
+## Create a new workbook
+wb <- createWorkbook("Ayanami")
+
+## Add some worksheets
+addWorksheet(wb, "Sheet 1")
+addWorksheet(wb, "Sheet 2")
+addWorksheet(wb, "Sheet 3")
+
+## Insert images
+insertImage(wb, "Sheet 1", img, startRow = 5, startCol = 3, width = 6, height = 5)
+
+
+## Save workbook
+## Not run: 
+saveWorkbook(wb, "insertImageExample.xlsx", overwrite = TRUE)
+
+## End(Not run)
+
+
+
+
+
+
 
 
 library(googlesheets4)
