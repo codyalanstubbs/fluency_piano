@@ -83,7 +83,8 @@ cleansed_data <-
         # Separating the notes for each chord and maintaining a column with all notes in it
         mutate(notes_all = notes) %>% 
         separate_rows(notes, sep = " ") %>% 
-        mutate(key_chord_short = gsub(" minor", "m", key_chord_short))
+        mutate(key_chord_short = gsub(" minor", "m", key_chord_short)) %>% 
+        mutate(key_chord_short = gsub(" major", "", key_chord_short))
 
 # final modifications and write to csv ----
 write.csv(cleansed_data, "data/chords_01_cleaned.csv", row.names = FALSE)
@@ -94,6 +95,6 @@ library(googledrive)
 table <- "https://docs.google.com/spreadsheets/d/1V6R8VAWCpLNPeC5WWSui4tm1cTzi3LgQB1_-kA_cwuU/edit?usp=sharing"
 
 #drive_auth(cache = ".secrets") #for the first time running the app in R to get the OAuth token
-gs4_auth(cache = ".secrets", email = TRUE, use_oob = TRUE)
+#gs4_auth(cache = ".secrets", email = TRUE, use_oob = TRUE)
 
 sheet_write(cleansed_data, table, sheet = "chord_data")
