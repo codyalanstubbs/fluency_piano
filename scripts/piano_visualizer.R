@@ -1,11 +1,18 @@
-library(tidyverse)
+require(tidyverse)
+require(googlesheets4)
+require(googledrive)
 
 display_notes <- function(chrd = NULL, notes_lst, octave_section = 5){
         
         
                 # Load data for piano figure ----
+                if (exists("key_data")){ 
+                        
+                } else {
+                        key_data <<- read_sheet("https://docs.google.com/spreadsheets/d/1V6R8VAWCpLNPeC5WWSui4tm1cTzi3LgQB1_-kA_cwuU/edit?usp=sharing", sheet = "key_data_88_keys")
+                }        
                 k_data <- 
-                        read_csv("data/key-data-88 - keys.csv")  %>% 
+                        key_data  %>% 
                         # Select a specific octave to focus
                         filter(octave %in% octave_section) %>%  
                         # Create different y-values to use for black and white keys
@@ -91,8 +98,12 @@ display_notes <- function(chrd = NULL, notes_lst, octave_section = 5){
                 p_w_chord
                 
         } else{
-                chord_data <- read_csv("data/chords_01_cleaned.csv") %>% 
-                        filter(key_chord_short %in% chrd) %>% 
+                if (exists("chord_data_raw")){ 
+                        
+                } else {
+                        chord_data_raw <<- read_sheet("https://docs.google.com/spreadsheets/d/1V6R8VAWCpLNPeC5WWSui4tm1cTzi3LgQB1_-kA_cwuU/edit?usp=sharing", sheet = "chord_data")
+                        }
+                chord_data <-  chord_data_raw %>% filter(key_chord_short %in% chrd) %>% 
                         select(key_chord_short, notes) 
                 
                 visual_data <- k_data %>% 
@@ -144,7 +155,11 @@ display_notes <- function(chrd = NULL, notes_lst, octave_section = 5){
 }
 
 # Test out the function
-notes_lst <- c("A", "C#", "E")
-chrd <- "B major"
-display_notes(chrd = chrd, octave_section = 1:3)
-display_notes(notes_lst = notes_lst)
+# notes_lst <- c("A", "C#", "E")
+# chrd <- "Bm"
+# display_notes(chrd = chrd, octave_section = 1:3)
+# display_notes(notes_lst = notes_lst)
+# # The following produces a series of combined figures for  a list of chords
+# chrds <- c("Cm", "Bm", "G", "F")
+# plist = lapply(chrds, function(x) {display_notes(chrd = x)})
+# grid.arrange(grobs = plist)
